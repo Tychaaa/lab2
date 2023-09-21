@@ -46,17 +46,17 @@ typedef struct {
     string orderDate;   // Дата заказа
     Employee employee;  // Сотрудник магазина
     Customer customer;  // Клиент
-    VinylRecord orderedRecords[10]; // Максимум 10 заказанных пластинок
+    VinylRecord orderedRecords[10]; // Список заказанных виниловых пластинок
     //int quantityOrdered[10];
     float totalCost;    // Общая стоимость заказа
 } Order;
 
 // Структура для магазина
 typedef struct {
-    string storeName;
-    string storeAddress;
-    VinylRecord vinylRecordsInStore[100]; // Максимум 100 пластинок
-    Employee employeesInStore[20]; // Максимум 20 сотрудников
+    string storeName;    // Название магазина
+    string storeAddress; // Адрес магазина
+    VinylRecord vinylRecordsInStore[100]; // Список имеющихся в магазине виниловых пластинок
+    Employee employeesInStore[20];        // Список сотрудников магазина
 } Store;
 
 int main()
