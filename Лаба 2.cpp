@@ -92,7 +92,6 @@ void inputVinylRecord(VinylRecord& record) {
 
 // Функция для вывода информации о виниловой пластинке
 void outputVinylRecord(const VinylRecord& record) {
-    //cout << "Информация о виниловой пластинке:" << endl;
     cout << "Название альбома: " << record.albumName << endl;
     cout << "Исполнитель: " << record.artist << endl;
     cout << "Год выпуска: " << record.year << endl;
@@ -104,8 +103,6 @@ void outputVinylRecord(const VinylRecord& record) {
 
 // Функция для инициализации и ввода информации о клиенте
 void inputCustomer(Customer& customer) {
-    cout << "Введите информацию о клиенте:" << endl;
-
     cout << "Введите имя клиента: ";
     cin >> customer.person.firstName;
 
@@ -119,15 +116,6 @@ void inputCustomer(Customer& customer) {
     cin.ignore(); // Очищаем буфер для считывания строки
     getline(cin, customer.address);
 
-    cout << endl;
-}
-
-// Функция для вывода информации о клиенте
-void outputCustomer(const Customer& customer) {
-    cout << "Информация о клиенте:" << endl;
-    cout << "Имя клиента: " << customer.person.firstName << " " << customer.person.lastName << endl;
-    cout << "Количество денег клиента: " << customer.money << endl;
-    cout << "Адрес доставки: " << customer.address << endl;
     cout << endl;
 }
 
@@ -152,7 +140,6 @@ void inputEmployee(Employee& employee) {
 
 // Функция для вывода информации о сотруднике магазина
 void outputEmployee(const Employee& employee) {
-    //cout << "Информация о сотруднике:" << endl;
     cout << "Имя сотрудника: " << employee.person.firstName << " " << employee.person.lastName << endl;
     cout << "Должность: " << employee.position << endl;
     cout << "Зарплата: " << employee.salary << endl;
@@ -164,15 +151,13 @@ void inputStore(Store& store) {
     cout << "Введите информацию о магазине:" << endl;
 
     cout << "Введите название магазина: ";
-    cin >> store.storeName;
+    getline(cin, store.storeName);
 
     cout << "Введите адрес магазина: ";
-    cin.ignore(); // Очищаем буфер для считывания строки
     getline(cin, store.storeAddress);
 
     // Ввод информации о виниловых пластинках в магазине
     cout << "Введите количество имеющихся виниловых пластинок: ";
-    //int numRecords;
     cin >> numRecords;
     cout << endl;
     for (int i = 0; i < numRecords; i++) {
@@ -182,7 +167,6 @@ void inputStore(Store& store) {
 
     // Ввод информации о сотрудниках магазина
     cout << "Введите количество сотрудников магазина: ";
-    //int numEmployees;
     cin >> numEmployees;
     cout << endl;
     for (int i = 0; i < numEmployees; i++) {
@@ -195,7 +179,6 @@ void inputStore(Store& store) {
 
 // Функция для вывода информации о магазине
 void outputStore(const Store& store) {
-    //system("cls");
     cout << "Информация о магазине:" << endl;
     cout << "Название магазина: " << store.storeName << endl;
     cout << "Адрес магазина: " << store.storeAddress << endl;
@@ -205,9 +188,11 @@ void outputStore(const Store& store) {
     // Вывод информации о виниловых пластинках в магазине
     cout << "Информация о виниловых пластинках в магазине:" << endl;
     for (int i = 0; i < MAX_RECORDS && !store.vinylRecordsInStore[i].albumName.empty(); i++) {
-        cout << "Виниловая пластинка #" << i + 1 << ":" << endl;
+        cout << endl << "Виниловая пластинка #" << i + 1 << ":" << endl;
         outputVinylRecord(store.vinylRecordsInStore[i]);
     }
+
+    cout << endl;
 
     // Вывод информации о сотрудниках магазина
     cout << "Информация о сотрудниках магазина:" << endl;
@@ -217,30 +202,126 @@ void outputStore(const Store& store) {
     }
 }
 
+// Функция для выбора существующего сотрудника
+void chooseEmployee(Employee employees[], int numEmployees, Employee& selectedEmployee) {
+    bool isValidChoice = false;
+
+    for (int i = 0; i < numEmployees; i++) {
+        cout << i + 1 << ". " << employees[i].person.firstName << " " << employees[i].person.lastName << endl;
+    }
+
+    do {
+        int choice;
+        cin >> choice;
+
+        if (choice >= 1 && choice <= numEmployees) {
+            selectedEmployee = employees[choice - 1];
+            isValidChoice = true; // Устанавливаем флаг, если выбор сотрудника корректен
+        }
+        else {
+            cout << "Некорректный выбор. Пожалуйста, выберите сотрудника из списка." << endl;
+        }
+    } while (!isValidChoice); // Повторяем цикл, пока выбор не станет корректным
+}
+
+// Функция для выбора существующей виниловой пластинки
+void chooseVinylRecord(VinylRecord records[], int numRecords, VinylRecord& selectedRecord) {
+    bool isValidChoice = false;
+
+    for (int i = 0; i < numRecords; i++) {
+        cout << i + 1 << ". " << records[i].albumName << " - " << records[i].artist << " (" << records[i].quantity << "шт." << ")" << endl;
+    }
+
+    do {
+        int choice;
+        cin >> choice;
+
+        if (choice >= 1 && choice <= numRecords) {
+            selectedRecord = records[choice - 1];
+            isValidChoice = true;
+        }
+        else {
+            cout << "Некорректный выбор." << endl;
+        }
+    } while (!isValidChoice);
+}
+
+// Функция для ввода информации о заказе
+void inputOrder(Order& order, Store& store) {
+    cout << "Введите номер заказа: ";
+    cin >> order.orderNumber;
+
+    cout << "Введите дату заказа: ";
+    cin >> order.orderDate;
+
+    cout << "Выберите сотрудника, обслуживающего заказ:" << endl;
+    chooseEmployee(store.employeesInStore, numEmployees, order.employee);
+
+    cout << "Введите информацию о клиенте, оформляющем заказ:" << endl;
+    inputCustomer(order.customer);
+
+    cout << "Введите количество заказанных виниловых пластинок: ";
+    int numOrderedRecords;
+    cin >> numOrderedRecords;
+    cout << "Выберите виниловые пластинки для заказа:" << endl;
+    for (int i = 0; i < numOrderedRecords; i++) {
+        cout << "Виниловая пластинка #" << i + 1 << ":" << endl;
+        chooseVinylRecord(store.vinylRecordsInStore, numRecords, order.orderedRecords[i]);
+        cout << "Введите количество заказанных экземпляров: ";
+        cin >> order.quantityOrdered[i];
+    }
+
+    // Вычисляем общую стоимость заказа
+    order.totalCost = 0;
+    for (int i = 0; i < numOrderedRecords; i++) {
+        order.totalCost += order.orderedRecords[i].price * order.quantityOrdered[i];
+    }
+
+    cout << endl;
+}
+
+// Функция для вывода информации о заказе
+void outputOrder(const Order& order) {
+    cout << "Информация о заказе:" << endl;
+
+    cout << "Номер заказа: " << order.orderNumber << endl;
+
+    cout << "Дата заказа: " << order.orderDate << endl;
+
+    cout << "Сотрудник магазина: " << order.employee.person.firstName << " " << order.employee.person.lastName << " (" << order.employee.position << ")" << endl;
+
+    cout << "Клиент: " << order.customer.person.firstName << " " << order.customer.person.lastName << endl;
+
+    cout << "Список заказанных виниловых пластинок:" << endl;
+    for (int i = 0; i < 10; i++) {
+        if (!order.orderedRecords[i].albumName.empty()) {
+            cout << order.orderedRecords[i].albumName << " - " << order.quantityOrdered[i] << " шт." << endl;
+        }
+    }
+
+    cout << "Общая стоимость заказа: " << order.totalCost << endl;
+
+    cout << endl;
+}
+
 int main()
 {
     // Ставим русский язык в консоль
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    //VinylRecord vinyl1;
-    //Customer customer1;
-    //Employee employee1;
+    cout << "\t~~Программа по реализации АТД на языке C и C++~~\n";
+    cout << endl;
+
     Store store1;
+    Order order1;
 
     inputStore(store1);
     outputStore(store1);
 
-    /*
-    Order order1;
-    initializeOrder(order1, 1, "2023-09-19", employee1, customer1);
+    inputOrder(order1, store1);
+    outputOrder(order1);
 
-    // Добавление виниловой пластинки в заказ
-    addRecordToOrder(order1, vinyl1, 3);
-
-    // Вывод информации о заказе
-    printOrder(order1);
-    */
     return 0;
 }
 
